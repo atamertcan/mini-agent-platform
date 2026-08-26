@@ -1,0 +1,184 @@
+/* ---------- Auth ekranı ---------- */
+.auth-container {
+  max-width: 380px;
+  margin: 10vh auto 0;
+  padding: 32px;
+  background: Canvas;
+  border: 1px solid color-mix(in srgb, CanvasText 15%, transparent);
+  border-radius: 12px;
+}
+
+.auth-container h1 {
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, CanvasText 15%, transparent);
+}
+
+.tabs button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+}
+
+.tabs button.active {
+  background: color-mix(in srgb, CanvasText 10%, transparent);
+  font-weight: 600;
+}
+
+/* ---------- Ortak form stili ---------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  text-align: left;
+}
+
+input,
+textarea {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+  background: Field;
+  color: FieldText;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+button[type="submit"],
+.form-actions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  font-weight: 500;
+}
+
+.form-actions button[type="button"] {
+  background: color-mix(in srgb, CanvasText 15%, transparent);
+  color: inherit;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.info {
+  color: #16a34a;
+  font-size: 14px;
+}
+
+/* ---------- Dashboard ---------- */
+.dashboard {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.dashboard header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.dashboard header h1 {
+  font-size: 20px;
+}
+
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.user-bar button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+  background: transparent;
+  color: inherit;
+}
+
+.agent-form,
+.agent-list {
+  background: Canvas;
+  border: 1px solid color-mix(in srgb, CanvasText 15%, transparent);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.agent-list ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agent-list li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, CanvasText 12%, transparent);
+  border-radius: 8px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.item-info .meta {
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+.item-info .prompt {
+  font-size: 13px;
+  opacity: 0.8;
+  max-width: 420px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.item-actions button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+}
