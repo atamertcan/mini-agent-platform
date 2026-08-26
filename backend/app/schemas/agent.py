@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict
 class AgentCreateRequest(BaseModel):
     name: str
     system_prompt: str = ""
-    model: str = "gpt-4o-mini"
+    model: str = "anthropic/claude-haiku-4.5"
     temperature: float = 0.7
 
 class AgentUpdateRequest(BaseModel):
