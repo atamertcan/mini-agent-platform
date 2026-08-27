@@ -36,7 +36,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
-    access_token = create_access_token(user.id, user.tenant_id)
+    access_token = create_access_token(user.id)
     return TokenResponse(access_token=access_token)
 
 
