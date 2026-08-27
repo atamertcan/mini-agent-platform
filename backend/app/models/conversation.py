@@ -12,5 +12,6 @@ class Conversation(Base):
     agent_id: Mapped[int] = mapped_column(ForeignKey("agents.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
+    tenant: Mapped["Tenant"] = relationship(back_populates="conversations")
     agent: Mapped["Agent"] = relationship(back_populates="conversations")
     messages: Mapped[list["Message"]] = relationship(back_populates="conversation", order_by="Message.id")

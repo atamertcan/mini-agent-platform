@@ -1,6 +1,5 @@
 from sqlalchemy import Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from app.db.base import Base
 
 
@@ -16,3 +15,4 @@ class Agent(Base):
 
     tenant: Mapped["Tenant"] = relationship(back_populates="agents")
     conversations: Mapped[list["Conversation"]] = relationship(back_populates="agent")
+    tools: Mapped[list["Tool"]] = relationship(back_populates="agent")
