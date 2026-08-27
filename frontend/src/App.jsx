@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { api } from "./api";
+import { api, setUnauthorizedHandler } from "./api";
 import AuthView from "./AuthView";
 import DashboardView from "./DashboardView";
 import "./App.css";
@@ -15,6 +15,10 @@ export default function App() {
     }
     api.me(token).then(setUser).catch(handleLogout);
   }, [token]);
+
+  useEffect(() => {
+    setUnauthorizedHandler(handleLogout);
+  });
 
   function handleLogin(newToken) {
     localStorage.setItem("token", newToken);

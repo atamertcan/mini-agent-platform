@@ -1,5 +1,11 @@
 const API_BASE = "http://localhost:8000";
 
+let onUnauthorized = () => {};
+
+export function setUnauthorizedHandler(handler) {
+  onUnauthorized = handler;
+}
+
 async function request(path, { method = "GET", body, token } = {}) {
   const headers = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -17,6 +23,11 @@ async function request(path, { method = "GET", body, token } = {}) {
       message = data.detail || message;
     } catch {
       // gövde yoksa/JSON değilse, res.statusText ile devam et
+    }
+    // sadece token'lı (korumali) bir istek 401 alirsa oturum suresi dolmus demektir;
+    // login/register'daki "yanlis sifre" 401'i token tasimadigi icin buraya girmez
+    if (res.status === 401 && token) {
+      onUnauthorized();
     }
     throw new Error(message);
   }
