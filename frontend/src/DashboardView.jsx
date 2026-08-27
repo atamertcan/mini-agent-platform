@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "./api";
+import ToolsView from "./ToolsView";
+import ChatView from "./ChatView";
 
 const emptyForm = { name: "", system_prompt: "", model: "gpt-4o-mini", temperature: 0.7 };
 
@@ -9,6 +11,8 @@ export default function DashboardView({ token, user, onLogout }) {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [managingToolsFor, setManagingToolsFor] = useState(null);
+  const [chattingWith, setChattingWith] = useState(null);
 
   useEffect(() => {
     loadAgents();
@@ -66,6 +70,16 @@ export default function DashboardView({ token, user, onLogout }) {
     } catch (err) {
       setError(err.message);
     }
+  }
+
+  if (managingToolsFor) {
+    return (
+      <ToolsView agent={managingToolsFor} token={token} onBack={() => setManagingToolsFor(null)} />
+    );
+  }
+
+  if (chattingWith) {
+    return <ChatView agent={chattingWith} token={token} onBack={() => setChattingWith(null)} />;
   }
 
   return (
@@ -147,6 +161,8 @@ export default function DashboardView({ token, user, onLogout }) {
                   {agent.system_prompt && <p className="prompt">{agent.system_prompt}</p>}
                 </div>
                 <div className="item-actions">
+                  <button onClick={() => setChattingWith(agent)}>Sohbet</button>
+                  <button onClick={() => setManagingToolsFor(agent)}>Tool'lar</button>
                   <button onClick={() => startEdit(agent)}>Düzenle</button>
                   <button onClick={() => handleDelete(agent.id)}>Sil</button>
                 </div>

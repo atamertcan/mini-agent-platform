@@ -51,7 +51,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
   padding: 8px 10px;
   border-radius: 6px;
   border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
@@ -181,4 +182,121 @@ button[type="submit"],
   background: transparent;
   color: inherit;
   font-size: 13px;
+}
+
+/* ---------- Tool parametre listesi ---------- */
+.param-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, CanvasText 12%, transparent);
+  border-radius: 8px;
+}
+
+.param-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.param-list-header button {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+}
+
+.param-row {
+  display: grid;
+  grid-template-columns: 1fr 110px 1.4fr auto auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.param-row input,
+.param-row select {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.param-required {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 4px !important;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.param-row > button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+}
+
+/* ---------- Sohbet ---------- */
+.chat-container {
+  background: Canvas;
+  border: 1px solid color-mix(in srgb, CanvasText 15%, transparent);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 320px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.chat-message {
+  max-width: 75%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, CanvasText 12%, transparent);
+}
+
+.chat-message p {
+  margin: 2px 0 0;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.chat-message .chat-role {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  background: color-mix(in srgb, #4f46e5 15%, transparent);
+}
+
+.chat-message.assistant {
+  align-self: flex-start;
+  background: color-mix(in srgb, CanvasText 6%, transparent);
+}
+
+.chat-input-bar {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.chat-input-bar input {
+  flex: 1;
 }

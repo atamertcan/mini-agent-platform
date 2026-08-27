@@ -44,4 +44,13 @@ export const api = {
   createAgent: (data, token) => request("/agents/", { method: "POST", body: data, token }),
   updateAgent: (id, data, token) => request(`/agents/${id}`, { method: "PATCH", body: data, token }),
   deleteAgent: (id, token) => request(`/agents/${id}`, { method: "DELETE", token }),
+  listTools: (agentId, token) => request(`/agents/${agentId}/tools/`, { token }),
+  createTool: (agentId, data, token) =>
+    request(`/agents/${agentId}/tools/`, { method: "POST", body: data, token }),
+  updateTool: (agentId, toolId, data, token) =>
+    request(`/agents/${agentId}/tools/${toolId}`, { method: "PATCH", body: data, token }),
+  deleteTool: (agentId, toolId, token) =>
+    request(`/agents/${agentId}/tools/${toolId}`, { method: "DELETE", token }),
+  sendMessage: (agentId, data, token) =>
+    request(`/agents/${agentId}/chat`, { method: "POST", body: data, token }),
 };

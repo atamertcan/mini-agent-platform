@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
 from app.api.agents import router as agents_router
+from app.api.tools import router as tools_router
 
 app = FastAPI(title="Mini Agent Platform")
 
@@ -15,3 +16,4 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(agents_router)
+app.include_router(tools_router)
