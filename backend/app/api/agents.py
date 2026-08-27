@@ -9,9 +9,10 @@ from app.core.agent_service import (
     list_agents,
     update_agent,
 )
+from app.core.chat_service import ConversationNotFoundError, send_message
 from app.db.session import get_db
 from app.models import User
-from app.schemas import AgentCreateRequest, AgentResponse, AgentUpdateRequest
+from app.schemas import AgentCreateRequest, AgentResponse, AgentUpdateRequest, ChatRequest, ChatResponse
 
 router = APIRouter(prefix="/agents", tags=["agents"])
 
@@ -43,3 +44,12 @@ def delete(agent_id: int, current_user: User = Depends(get_current_user), db: Se
         delete_agent(db, current_user.tenant_id, agent_id)
     except AgentNotFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Agent not found")
+
+@router.post("/{agent_id}/chat", response_model=ChatResponse)
+def chat(agent_id: int, data: ChatRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        return send_message(db, current_user.tenant_id, agent_id, data.content, data.conversation_id)
+    except AgentNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Agent not found")
+    except ConversationNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
