@@ -10,7 +10,7 @@ class ToolNotFoundError(Exception):
 def create_tool(db: Session, tenant_id: int, agent_id: int, data: ToolCreateRequest) -> Tool:
     get_agent(db, tenant_id, agent_id)
     tool = Tool(tenant_id=tenant_id,agent_id=agent_id,name=data.name,description=data.description,url=data.url,http_method=data.http_method,
-                parameters=[p.model_dump() for p in data.parameters])
+                parameters=[p.model_dump() for p in data.parameters],headers=data.headers)
     db.add(tool)
     db.commit()
     db.refresh(tool)

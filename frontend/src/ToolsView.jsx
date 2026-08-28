@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import { api } from "./api";
 
 const emptyParam = { name: "", type: "string", description: "", required: true };
-const emptyForm = { name: "", description: "", url: "", http_method: "POST", parameters: [] };
+const emptyHeader = { key: "", value: "" };
+const emptyForm = { name: "", description: "", url: "", http_method: "POST", parameters: [], headers: [] };
+
+function headersToDict(headers) {
+  return Object.fromEntries(headers.filter((h) => h.key.trim()).map((h) => [h.key, h.value]));
+}
+
+function headersToRows(headers) {
+  return Object.entries(headers || {}).map(([key, value]) => ({ key, value }));
+}
 
 export default function ToolsView({ agent, token, onBack }) {
   const [tools, setTools] = useState([]);
@@ -29,11 +38,12 @@ export default function ToolsView({ agent, token, onBack }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    const payload = { ...form, headers: headersToDict(form.headers) };
     try {
       if (editingId) {
-        await api.updateTool(agent.id, editingId, form, token);
+        await api.updateTool(agent.id, editingId, payload, token);
       } else {
-        await api.createTool(agent.id, form, token);
+        await api.createTool(agent.id, payload, token);
       }
       setForm(emptyForm);
       setEditingId(null);
@@ -51,6 +61,7 @@ export default function ToolsView({ agent, token, onBack }) {
       url: tool.url,
       http_method: tool.http_method,
       parameters: tool.parameters,
+      headers: headersToRows(tool.headers),
     });
   }
 
@@ -83,11 +94,24 @@ export default function ToolsView({ agent, token, onBack }) {
     setForm({ ...form, parameters: form.parameters.filter((_, i) => i !== index) });
   }
 
+  function addHeader() {
+    setForm({ ...form, headers: [...form.headers, { ...emptyHeader }] });
+  }
+
+  function updateHeader(index, field, value) {
+    const updated = form.headers.map((h, i) => (i === index ? { ...h, [field]: value } : h));
+    setForm({ ...form, headers: updated });
+  }
+
+  function removeHeader(index) {
+    setForm({ ...form, headers: form.headers.filter((_, i) => i !== index) });
+  }
+
   return (
     <div className="dashboard">
       <header>
-        <h1>{agent.name} — Tool'lar</h1>
-        <button onClick={onBack}>Agent'lara Dön</button>
+        <h1>{agent.name} Toollar</h1>
+        <button onClick={onBack}>Agentlara Dön</button>
       </header>
 
       <section className="agent-form">
@@ -108,7 +132,12 @@ export default function ToolsView({ agent, token, onBack }) {
           </label>
           <label>
             URL
-            <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} required />
+            <input
+              value={form.url}
+              onChange={(e) => setForm({ ...form, url: e.target.value })}
+              placeholder="https://wttr.in/{city}?format=3"
+              required
+            />
           </label>
           <label>
             HTTP Metodu
@@ -160,6 +189,32 @@ export default function ToolsView({ agent, token, onBack }) {
             ))}
           </div>
 
+          <div className="param-list">
+            <div className="param-list-header">
+              <span>Headerlar (API key / Authorization vb.)</span>
+              <button type="button" onClick={addHeader}>
+                + Header Ekle
+              </button>
+            </div>
+            {form.headers.map((header, i) => (
+              <div className="header-row" key={i}>
+                <input
+                  placeholder="Authorization"
+                  value={header.key}
+                  onChange={(e) => updateHeader(i, "key", e.target.value)}
+                />
+                <input
+                  placeholder="Bearer xxxx"
+                  value={header.value}
+                  onChange={(e) => updateHeader(i, "value", e.target.value)}
+                />
+                <button type="button" onClick={() => removeHeader(i)}>
+                  Sil
+                </button>
+              </div>
+            ))}
+          </div>
+
           {error && <p className="error">{error}</p>}
 
           <div className="form-actions">
@@ -174,7 +229,7 @@ export default function ToolsView({ agent, token, onBack }) {
       </section>
 
       <section className="agent-list">
-        <h2>Tool'lar ({tools.length})</h2>
+        <h2>Toollar ({tools.length})</h2>
         {loading ? (
           <p>Yükleniyor...</p>
         ) : tools.length === 0 ? (
@@ -193,6 +248,9 @@ export default function ToolsView({ agent, token, onBack }) {
                     <p className="meta">
                       Parametreler: {tool.parameters.map((p) => `${p.name}${p.required ? "*" : ""}`).join(", ")}
                     </p>
+                  )}
+                  {Object.keys(tool.headers || {}).length > 0 && (
+                    <p className="meta">Headerlar: {Object.keys(tool.headers).join(", ")}</p>
                   )}
                 </div>
                 <div className="item-actions">

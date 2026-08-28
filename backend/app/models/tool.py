@@ -14,6 +14,7 @@ class Tool(Base):
     url: Mapped[str] = mapped_column(String, nullable=False)
     http_method: Mapped[str] = mapped_column(String, nullable=False, default="POST")
     parameters: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    headers: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
 
     tenant: Mapped["Tenant"] = relationship(back_populates="tools")
     agent: Mapped["Agent"] = relationship(back_populates="tools")

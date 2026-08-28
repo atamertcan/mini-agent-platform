@@ -41,7 +41,7 @@ export default function ChatView({ agent, token, onBack }) {
     <div className="dashboard">
       <header>
         <h1>{agent.name} — Sohbet</h1>
-        <button onClick={onBack}>Agent'lara Dön</button>
+        <button onClick={onBack}>Agentlara Dön</button>
       </header>
 
       <section className="chat-container">

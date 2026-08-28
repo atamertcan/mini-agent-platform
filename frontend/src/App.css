@@ -241,6 +241,27 @@ button[type="submit"],
   font-size: 12px;
 }
 
+.header-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.header-row input {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.header-row > button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+}
+
 /* ---------- Sohbet ---------- */
 .chat-container {
   background: Canvas;

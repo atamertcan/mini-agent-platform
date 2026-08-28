@@ -3,7 +3,8 @@ import { api } from "./api";
 import ToolsView from "./ToolsView";
 import ChatView from "./ChatView";
 
-const emptyForm = { name: "", system_prompt: "", model: "gpt-4o-mini", temperature: 0.7 };
+const DEFAULT_MODEL = "anthropic/claude-haiku-4.5";
+const emptyForm = { name: "", system_prompt: "", model: "", temperature: 0.7 };
 
 export default function DashboardView({ token, user, onLogout }) {
   const [agents, setAgents] = useState([]);
@@ -32,11 +33,12 @@ export default function DashboardView({ token, user, onLogout }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    const payload = { ...form, model: form.model.trim() || DEFAULT_MODEL };
     try {
       if (editingId) {
-        await api.updateAgent(editingId, form, token);
+        await api.updateAgent(editingId, payload, token);
       } else {
-        await api.createAgent(form, token);
+        await api.createAgent(payload, token);
       }
       setForm(emptyForm);
       setEditingId(null);
@@ -116,6 +118,7 @@ export default function DashboardView({ token, user, onLogout }) {
             <input
               value={form.model}
               onChange={(e) => setForm({ ...form, model: e.target.value })}
+              placeholder={DEFAULT_MODEL}
             />
           </label>
           <label>
@@ -144,7 +147,7 @@ export default function DashboardView({ token, user, onLogout }) {
       </section>
 
       <section className="agent-list">
-        <h2>Agent'larım ({agents.length})</h2>
+        <h2>Agentlarım ({agents.length})</h2>
         {loading ? (
           <p>Yükleniyor...</p>
         ) : agents.length === 0 ? (
@@ -162,7 +165,7 @@ export default function DashboardView({ token, user, onLogout }) {
                 </div>
                 <div className="item-actions">
                   <button onClick={() => setChattingWith(agent)}>Sohbet</button>
-                  <button onClick={() => setManagingToolsFor(agent)}>Tool'lar</button>
+                  <button onClick={() => setManagingToolsFor(agent)}>Toollar</button>
                   <button onClick={() => startEdit(agent)}>Düzenle</button>
                   <button onClick={() => handleDelete(agent.id)}>Sil</button>
                 </div>

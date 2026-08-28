@@ -23,7 +23,8 @@ def build_args_schema(tool: Tool) -> type[BaseModel]:
 
 def build_tool_function(tool: Tool):
     def call_tool(**kwargs) -> str:
-        response = requests.request(tool.http_method, tool.url, json=kwargs, timeout=10)
+        url = tool.url.format(**kwargs)
+        response = requests.request(tool.http_method, url, json=kwargs, headers=tool.headers, timeout=10)
         response.raise_for_status()
         return response.text
 
