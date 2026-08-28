@@ -14,4 +14,4 @@ class Conversation(Base):
 
     tenant: Mapped["Tenant"] = relationship(back_populates="conversations")
     agent: Mapped["Agent"] = relationship(back_populates="conversations")
-    messages: Mapped[list["Message"]] = relationship(back_populates="conversation", order_by="Message.id")
+    messages: Mapped[list["Message"]] = relationship(back_populates="conversation", order_by="Message.id", cascade="all, delete-orphan")

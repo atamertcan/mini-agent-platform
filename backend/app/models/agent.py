@@ -14,5 +14,5 @@ class Agent(Base):
     temperature: Mapped[float] = mapped_column(Float, nullable=False, default=0.7)
 
     tenant: Mapped["Tenant"] = relationship(back_populates="agents")
-    conversations: Mapped[list["Conversation"]] = relationship(back_populates="agent")
-    tools: Mapped[list["Tool"]] = relationship(back_populates="agent")
+    conversations: Mapped[list["Conversation"]] = relationship(back_populates="agent", cascade="all, delete-orphan")
+    tools: Mapped[list["Tool"]] = relationship(back_populates="agent", cascade="all, delete-orphan")
