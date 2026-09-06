@@ -1,39 +1,39 @@
 # Mini Agent Platform
 
-Kullanıcıların kendi AI agent'larını oluşturabildiği, bu agent'larla sohbet edebildiği ve onlara özel HTTP tool'ları bağlayabildiği full-stack bir platform. Etiya stajı kapsamında, gerçek bir backend projesinin nasıl adım adım kurulduğunu öğrenmek amacıyla geliştirilmiştir.
+A full-stack platform where users can create their own AI agents, chat with them, and connect custom HTTP tools to them. Built to learn, step by step, how a real backend project is actually put together.
 
-## Özellikler
+## Features
 
-- Kayıt / giriş (JWT tabanlı kimlik doğrulama)
-- Tenant bazlı veri izolasyonu (her kullanıcı sadece kendi verisine erişir)
-- Agent CRUD (isim, system prompt, model, temperature)
-- Agent ile sohbet, konuşma geçmişinin veritabanında saklanması
-- Kullanıcı tanımlı HTTP tool'ları ve LLM'in bunları çağırabilmesi (function calling)
-- React tabanlı web arayüzü
+- Registration / login (JWT-based authentication)
+- Tenant-based data isolation (each user only accesses their own data)
+- Agent CRUD (name, system prompt, model, temperature)
+- Chat with an agent, with conversation history stored in the database
+- User-defined HTTP tools that the LLM can call (function calling)
+- React-based web interface
 
-## Teknoloji
+## Tech Stack
 
 **Backend:** Python, FastAPI, SQLAlchemy, Alembic, PostgreSQL, LangChain
 **Frontend:** React, Vite
-**LLM erişimi:** OpenRouter (OpenAI uyumlu API üzerinden farklı modellere erişim)
+**LLM access:** OpenRouter (access to different models through an OpenAI-compatible API)
 
-## Mimari
+## Architecture
 
 ```
 Frontend (React)
     |  HTTP + JWT
     v
-api/      -> route tanımları, request/response doğrulama
-core/     -> iş mantığı (auth, agent, chat, tool servisleri)
-models/   -> SQLAlchemy tabloları
-schemas/  -> Pydantic request/response şemaları
+api/      -> route definitions, request/response validation
+core/     -> business logic (auth, agent, chat, tool services)
+models/   -> SQLAlchemy tables
+schemas/  -> Pydantic request/response schemas
     v
 PostgreSQL
 ```
 
-Kural: `api/` katmanı iş mantığı içermez; veritabanı sorguları sadece `core/` katmanındaki servislerde yapılır.
+Rule: the `api/` layer contains no business logic; database queries only happen in the `core/` layer's services.
 
-## Proje Yapısı
+## Project Structure
 
 ```
 backend/
@@ -46,17 +46,17 @@ backend/
     schemas/    auth.py, agent.py, chat.py, tool.py
     config.py
     main.py
-  alembic/      veritabanı migration'ları
+  alembic/      database migrations
 frontend/
   src/
-    AuthView.jsx        giriş / kayıt ekranı
-    DashboardView.jsx    agent listeleme / oluşturma
-    ChatView.jsx         agent ile sohbet ekranı
-    ToolsView.jsx        tool yönetim ekranı
-    api.js               backend ile iletişim katmanı
+    AuthView.jsx        login / register screen
+    DashboardView.jsx   agent listing / creation
+    ChatView.jsx         chat screen with an agent
+    ToolsView.jsx        tool management screen
+    api.js               backend communication layer
 ```
 
-## Kurulum
+## Setup
 
 ### Backend
 
@@ -67,34 +67,34 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-`.env` dosyasını `.env.example`'dan kopyalayıp doldur:
+Copy `.env` from `.env.example` and fill it in:
 
 ```bash
 cp .env.example .env
 ```
 
-| Değişken | Açıklama |
+| Variable | Description |
 |---|---|
-| `DATABASE_URL` | PostgreSQL bağlantı adresi |
-| `JWT_SECRET` | JWT imzalama anahtarı |
-| `JWT_ALGORITHM` | JWT algoritması (varsayılan: HS256) |
-| `JWT_EXPIRE_MINUTES` | Token geçerlilik süresi (dakika) |
-| `OPENROUTER_API_KEY` | OpenRouter API anahtarı |
-| `OPENROUTER_BASE_URL` | OpenRouter API adresi |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | JWT signing key |
+| `JWT_ALGORITHM` | JWT algorithm (default: HS256) |
+| `JWT_EXPIRE_MINUTES` | Token validity period (minutes) |
+| `OPENROUTER_API_KEY` | OpenRouter API key |
+| `OPENROUTER_BASE_URL` | OpenRouter API base URL |
 
-Veritabanı migration'larını çalıştır:
+Run the database migrations:
 
 ```bash
 alembic upgrade head
 ```
 
-Sunucuyu başlat:
+Start the server:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-API dokümantasyonu: `http://localhost:8000/docs`
+API docs: `http://localhost:8000/docs`
 
 ### Frontend
 
@@ -104,23 +104,17 @@ npm install
 npm run dev
 ```
 
-Arayüz: `http://localhost:5173`
+App: `http://localhost:5173`
 
-## API Uç Noktaları
+## API Endpoints
 
-| Method | Path | Açıklama |
+| Method | Path | Description |
 |---|---|---|
-| POST | `/auth/register` | Yeni kullanıcı kaydı |
-| POST | `/auth/login` | Giriş, JWT token döner |
-| GET | `/auth/me` | Giriş yapmış kullanıcının bilgisi |
-| GET/POST | `/agents/` | Agent listeleme / oluşturma |
-| GET/PATCH/DELETE | `/agents/{agent_id}` | Tek bir agent üzerinde işlem |
-| POST | `/agents/{agent_id}/chat` | Agent ile mesajlaşma |
-| GET/POST | `/agents/{agent_id}/tools/` | Tool listeleme / oluşturma |
-| GET/PATCH/DELETE | `/agents/{agent_id}/tools/{tool_id}` | Tek bir tool üzerinde işlem |
-
-## Kurallar
-
-- Commit formatı: `type(scope): açıklama` (feat, fix, docs, chore)
-- Ortam değişkenleri (`.env`) repoya commitlenmez
-- Kodda ve arayüzde emoji kullanılmaz
+| POST | `/auth/register` | Register a new user |
+| POST | `/auth/login` | Log in, returns a JWT token |
+| GET | `/auth/me` | Info about the currently logged-in user |
+| GET/POST | `/agents/` | List / create agents |
+| GET/PATCH/DELETE | `/agents/{agent_id}` | Operate on a single agent |
+| POST | `/agents/{agent_id}/chat` | Send a message to an agent |
+| GET/POST | `/agents/{agent_id}/tools/` | List / create tools |
+| GET/PATCH/DELETE | `/agents/{agent_id}/tools/{tool_id}` | Operate on a single tool |
