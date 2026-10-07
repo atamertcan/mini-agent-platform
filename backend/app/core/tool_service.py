@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.core.agent_service import get_agent
+from app.core.agent_service import get_agent, invalidate_agent_cache
 from app.models import Tool
 from app.schemas import ToolCreateRequest, ToolUpdateRequest
 
@@ -13,6 +13,7 @@ def create_tool(db: Session, tenant_id: int, agent_id: int, data: ToolCreateRequ
                 parameters=[p.model_dump() for p in data.parameters],headers=data.headers)
     db.add(tool)
     db.commit()
+    invalidate_agent_cache(tenant_id, agent_id)
     db.refresh(tool)
     return tool
 
@@ -33,6 +34,7 @@ def update_tool(db: Session, tenant_id: int, agent_id: int, tool_id: int, data: 
         if value is not None:
             setattr(tool, field, value)
     db.commit()
+    invalidate_agent_cache(tenant_id, agent_id)
     db.refresh(tool)
     return tool
 
@@ -40,3 +42,4 @@ def delete_tool(db: Session, tenant_id: int, agent_id: int, tool_id: int) -> Non
     tool = get_tool(db, tenant_id, agent_id, tool_id)
     db.delete(tool)
     db.commit()
+    invalidate_agent_cache(tenant_id, agent_id)

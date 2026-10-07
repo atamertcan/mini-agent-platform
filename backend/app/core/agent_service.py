@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
-from app.core.cache import cache_get, cache_set
+from app.core.cache import cache_delete, cache_get, cache_set
 from app.core.snapshots import AgentSnapshot
 from app.models import Agent
 from app.schemas import AgentCreateRequest, AgentUpdateRequest
@@ -39,6 +39,9 @@ def get_agent(db: Session, tenant_id: int, agent_id: int) -> Agent:
 def agent_cache_key(tenant_id: int, agent_id: int) -> str:
     return f"agent:v1:{tenant_id}:{agent_id}"
 
+def invalidate_agent_cache(tenant_id: int, agent_id: int) -> None:
+    cache_delete(agent_cache_key(tenant_id, agent_id))
+
 def get_agent_snapshot(db: Session, tenant_id: int, agent_id: int) -> AgentSnapshot:
     key = agent_cache_key(tenant_id, agent_id)
 
@@ -64,6 +67,7 @@ def update_agent(db: Session, tenant_id: int, agent_id: int, data: AgentUpdateRe
         if value is not None:
             setattr(agent, key, value)
     db.commit()
+    invalidate_agent_cache(tenant_id, agent_id)
     db.refresh(agent)
     return agent
 
@@ -71,3 +75,4 @@ def delete_agent(db: Session, tenant_id: int, agent_id: int) -> None:
     agent = get_agent(db, tenant_id, agent_id)
     db.delete(agent)
     db.commit()
+    invalidate_agent_cache(tenant_id, agent_id)
