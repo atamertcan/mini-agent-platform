@@ -13,3 +13,4 @@ langchain
 langgraph
 langchain-openai
 requests
+redis

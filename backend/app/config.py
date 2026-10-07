@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 60
     openrouter_api_key: str
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    redis_url: str = ""
+    agent_cache_ttl_seconds: int = 300
 
 
 @lru_cache
