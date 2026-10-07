@@ -1,11 +1,11 @@
 from langchain_openai import ChatOpenAI
 from app.config import get_settings
-from app.models import Agent
+from app.core.snapshots import AgentSnapshot
 
 MAX_RESPONSE_TOKENS = 512
 
 
-def get_llm(agent: Agent) -> ChatOpenAI:
+def get_llm(agent: AgentSnapshot) -> ChatOpenAI:
     settings = get_settings()
     return ChatOpenAI(
         model=agent.model,

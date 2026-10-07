@@ -1,7 +1,7 @@
 import requests
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field, create_model
-from app.models import Tool
+from app.core.snapshots import ToolSnapshot
 
 TYPE_MAP = {
     "string": str,
@@ -10,7 +10,7 @@ TYPE_MAP = {
     "boolean": bool,
 }
 
-def build_args_schema(tool: Tool) -> type[BaseModel]:
+def build_args_schema(tool: ToolSnapshot) -> type[BaseModel]:
     fields = {}
     for param in tool.parameters:
         python_type = TYPE_MAP.get(param["type"], str)
@@ -21,7 +21,7 @@ def build_args_schema(tool: Tool) -> type[BaseModel]:
             fields[param["name"]] = (python_type | None, Field(None, description=description))
     return create_model(f"{tool.name}_args", **fields)
 
-def build_tool_function(tool: Tool):
+def build_tool_function(tool: ToolSnapshot):
     def call_tool(**kwargs) -> str:
         url = tool.url.format(**kwargs)
         response = requests.request(tool.http_method, url, json=kwargs, headers=tool.headers, timeout=10)
@@ -30,7 +30,7 @@ def build_tool_function(tool: Tool):
 
     return call_tool
 
-def build_structured_tool(tool: Tool) -> StructuredTool:
+def build_structured_tool(tool: ToolSnapshot) -> StructuredTool:
     return StructuredTool.from_function(
         func=build_tool_function(tool),
         name=tool.name,

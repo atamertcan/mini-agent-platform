@@ -1,6 +1,6 @@
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from sqlalchemy.orm import Session
-from app.core.agent_service import get_agent
+from app.core.agent_service import get_agent_snapshot
 from app.core.llm import get_llm
 from app.core.tool_builder import build_structured_tool
 from app.models import Conversation, Message
@@ -17,8 +17,8 @@ def get_conversation(db: Session, tenant_id: int, conversation_id: int) -> Conve
     return conversation
 
 def send_message(db: Session,tenant_id: int,agent_id: int,content: str,conversation_id: int | None = None) -> Message:
-    agent = get_agent(db, tenant_id, agent_id)
-    tools = [build_structured_tool(tool) for tool in agent.tools]
+    agent = get_agent_snapshot(db, tenant_id, agent_id)
+    tools =[build_structured_tool(tool) for tool in agent.tools]
     tools_by_name = {tool.name: tool for tool in tools}
 
     if conversation_id is None:
