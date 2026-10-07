@@ -17,6 +17,7 @@ A full-stack platform where users can create their own AI agents, chat with them
 **Backend:** Python, FastAPI, SQLAlchemy, Alembic, PostgreSQL, Redis (optional cache), LangChain
 **Frontend:** React, Vite
 **LLM access:** OpenRouter (access to different models through an OpenAI-compatible API)
+**Packaging:** Docker, Docker Compose
 
 ## Architecture
 
@@ -49,6 +50,7 @@ backend/
     config.py
     main.py
   alembic/      database migrations
+  Dockerfile    backend image
 frontend/
   src/
     AuthView.jsx        login / register screen
@@ -56,6 +58,8 @@ frontend/
     ChatView.jsx         chat screen with an agent
     ToolsView.jsx        tool management screen
     api.js               backend communication layer
+  Dockerfile    frontend image (build with Node, serve with nginx)
+docker-compose.yml      postgres, redis, backend, frontend
 ```
 
 ## Setup
@@ -85,6 +89,7 @@ cp .env.example .env
 | `OPENROUTER_BASE_URL` | OpenRouter API base URL |
 | `REDIS_URL` | Redis connection string, e.g. `redis://127.0.0.1:6379/0`. Leave empty to disable the cache |
 | `AGENT_CACHE_TTL_SECONDS` | Lifetime of a cached agent in seconds (default: 300) |
+| `CORS_ORIGINS` | Comma-separated frontend origins allowed by CORS (default: `http://localhost:5173`) |
 
 Run the database migrations:
 
@@ -109,6 +114,51 @@ npm run dev
 ```
 
 App: `http://localhost:5173`
+
+## Running with Docker
+
+Requires Docker with Compose. One command starts the whole stack: PostgreSQL, Redis, the backend and the frontend.
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set `POSTGRES_PASSWORD`, `JWT_SECRET` and `OPENROUTER_API_KEY`, then:
+
+```bash
+docker compose up -d --build
+```
+
+- App: `http://localhost:5173`
+- API docs: `http://localhost:8000/docs`
+
+Stop it with `docker compose down`. The database lives in the `postgres_data` volume, so your data survives `down`; `docker compose down -v` deletes it.
+
+| Service | Image | Notes |
+|---|---|---|
+| `postgres` | `postgres:17-alpine` | Data in the `postgres_data` volume, not exposed to the host |
+| `redis` | `redis:7-alpine` | Persistence disabled, not exposed to the host |
+| `backend` | built from `backend/Dockerfile` | Runs `alembic upgrade head` on start, then the API on port 8000 |
+| `frontend` | built from `frontend/Dockerfile` | Static build served by nginx on port 80 |
+
+Variables read from the root `.env`:
+
+| Variable | Description |
+|---|---|
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Database credentials and name (required) |
+| `JWT_SECRET` | JWT signing key (required) |
+| `OPENROUTER_API_KEY` | OpenRouter API key (required) |
+| `POSTGRES_VERSION` | PostgreSQL image tag (default: `17-alpine`) |
+| `BACKEND_PORT` | Host port of the API (default: `8000`) |
+| `FRONTEND_PORT` | Host port of the web app (default: `5173`) |
+
+Things to know:
+
+- The database starts empty; it is separate from any PostgreSQL you run locally.
+- `POSTGRES_USER`, `POSTGRES_PASSWORD` and `POSTGRES_DB` are only applied the first time the volume is created. Changing them later does not change the existing database; run `docker compose down -v` to start over. Use a password without `@`, `:` or `/`, because it is placed inside the connection URL.
+- A volume created by one PostgreSQL major version cannot be opened by another one. Pick `POSTGRES_VERSION` before the first start.
+- The frontend bakes the API address in at build time (`VITE_API_URL`, derived from `BACKEND_PORT`). After changing `BACKEND_PORT` or `FRONTEND_PORT`, run `docker compose up -d --build`.
+- A tool URL that uses `localhost` points to the backend container itself, not to your computer. Use `host.docker.internal` to reach a service on your machine.
 
 ## Redis Cache (optional)
 
